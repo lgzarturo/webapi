@@ -118,7 +118,7 @@ public class BookControllerTest {
     }
 
     @Test
-    public void updateBookWithUnkownIdShouldReturn404() throws Exception {
+    public void updateBookWithUnknownIdShouldReturn404() throws Exception {
         BookRequest bookRequest = new BookRequest();
         bookRequest.setAuthor("Arturo");
         bookRequest.setTitle("Spring Boot Fundamentals");
@@ -131,6 +131,18 @@ public class BookControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(bookRequest))
         ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deletingKnownEntityById() throws Exception {
+        this.mockMvc.perform(delete("/api/books/1"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void deletingUnknownEntityByIdShouldReturn404() throws Exception {
+        this.mockMvc.perform(delete("/api/books/42"))
+                .andExpect(status().isNotFound());
     }
 
     private Book createBook(long id, String title, String author, String isbn) {

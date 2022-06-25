@@ -46,4 +46,12 @@ public class BookService {
         BeanUtils.copyProperties(bookToUpdate, book);
         return book;
     }
+
+    public void deleteById(Long id) {
+        Optional<Book> requestedBook = bookRepository.findById(id);
+        if (requestedBook.isEmpty()) {
+            throw new BookNotFoundException(String.format("Book with id '%s' not exists", id));
+        }
+        bookRepository.delete(requestedBook.get());
+    }
 }
