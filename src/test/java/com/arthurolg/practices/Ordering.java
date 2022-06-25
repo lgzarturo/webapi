@@ -1,8 +1,5 @@
 package com.arthurolg.practices;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Ordering {
     public static void bubble(int[] data) {
         int aux;
@@ -33,33 +30,26 @@ public class Ordering {
         }
     }
 
-    public static void quick(int[] data) {
-        quickNextIteration(data);
-    }
-
-    public static void quickNextIteration(int[] data) {
-        quickLastIteration(data, 0, data.length - 1);
-    }
-
-    public static void quickLastIteration(int[] data, int left, int right) {
+    public static void quick(int[] data, int left, int right) {
         if (left >= right) return;
-        int indexLeft=left, indexRight=right;
-        int pivote;
+        int indexLeft = left, indexRight = right;
+        int pivote = left;
         int aux;
-        pivote = left;
         while(left!=right) {
-            while (data[right]>=data[pivote]&&left<right)
+            while (data[right]>=data[pivote]&&left<right) {
                 right--;
-                while (data[left]<data[pivote]&&left<right)
+                while (data[left] < data[pivote] && left < right) {
                     left++;
+                }
+            }
             if (right != left) {
                aux = data[right];
                data[right] = data[left];
                data[left] = aux;
             }
         }
-        quickLastIteration(data, indexLeft, left-1);
-        quickLastIteration(data, left+1, indexRight);
+        quick(data, indexLeft, left-1);
+        quick(data, left+1, indexRight);
     }
 
     public static void print(int[] data) {
@@ -69,30 +59,31 @@ public class Ordering {
     }
 
     public static void main(String[] args) {
-        int numberOfRandomNumbers = 1000;
+        int numberOfRandomNumbers = 50;
         int[] data = new int[numberOfRandomNumbers];
         int[] bubbleData = new int[numberOfRandomNumbers];
         int[] quickData = new int[numberOfRandomNumbers];
         int[] insertionData = new int[numberOfRandomNumbers];
         for (var i = 0; i < numberOfRandomNumbers; i++) {
-            var randomNumber = (int) Math.floor((Math.random() * 1000) + 1);
+            var randomNumber = (int) Math.floor((Math.random() * 50) + 1);
             bubbleData[i] = randomNumber;
             quickData[i] = randomNumber;
             insertionData[i] = randomNumber;
             data[i] = randomNumber;
         }
         print(data);
+        System.out.println("\n");
         long startTime = System.nanoTime();
         bubble(bubbleData);
-        //print(bubbleData);
-        System.out.println("\n [B] sort takes " + (System.nanoTime() - startTime) + "ns\n => (BubbleSort)");
+        print(bubbleData);
+        System.out.println(" [B] sort takes " + (System.nanoTime() - startTime) + "ns => (BubbleSort)");
         startTime = System.nanoTime();
-        quick(quickData);
-        //print(quickData);
-        System.out.println("\n [Q] sort takes " + (System.nanoTime() - startTime) + "ns\n => (QuickSort)");
+        quick(quickData, 0, quickData.length - 1);
+        print(quickData);
+        System.out.println(" [Q] sort takes " + (System.nanoTime() - startTime) + "ns => (QuickSort)");
         startTime = System.nanoTime();
         insertion(insertionData);
-        //print(insertionData);
-        System.out.println("\n [I] sort takes " + (System.nanoTime() - startTime) + "ns\n => (InsertionSort)");
+        print(insertionData);
+        System.out.println(" [I] sort takes " + (System.nanoTime() - startTime) + "ns => (InsertionSort)");
     }
 }
