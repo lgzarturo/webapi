@@ -1,6 +1,5 @@
 package com.arthurolg.webapi.books;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,11 +15,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -93,6 +92,45 @@ public class BookControllerTest {
         when(bookService.getBookById(2L)).thenThrow(new BookNotFoundException("Book with id '2' not exists"));
         this.mockMvc.perform(get("/api/books/2"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void updateBookWithIdShouldUpdateTheBook() throws Exception {
+        BookRequest bookRequest = new BookRequest();
+        bookRequest.setAuthor("Arturo");
+        bookRequest.setTitle("Spring Boot Fundamentals");
+        bookRequest.setIsbn("1244");
+
+        when(bookService.updateBookById(eq(1L), argumentCaptor.capture()))
+                .thenReturn(createBook(1L, "Spring Boot Fundamentals", "Arturo", "1244"));
+        this.mockMvc.perform(put("/api/books/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(bookRequest))
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$.title",is("Spring Boot Fundamentals")))
+                .andExpect(jsonPath("$.author",is("Arturo")))
+                .andExpect(jsonPath("$.isbn",is("1244")))
+                .andExpect(jsonPath("$.id",is(1)));
+        assertThat(argumentCaptor.getValue().getAuthor(), is("Arturo"));
+        assertThat(argumentCaptor.getValue().getTitle(), is("Spring Boot Fundamentals"));
+        assertThat(argumentCaptor.getValue().getIsbn(), is("1244"));
+    }
+
+    @Test
+    public void updateBookWithUnkownIdShouldReturn404() throws Exception {
+        BookRequest bookRequest = new BookRequest();
+        bookRequest.setAuthor("Arturo");
+        bookRequest.setTitle("Spring Boot Fundamentals");
+        bookRequest.setIsbn("1244");
+
+        when(bookService.updateBookById(eq(42L), argumentCaptor.capture()))
+                .thenThrow(new BookNotFoundException("Book with id '42' not exists"));
+
+        this.mockMvc.perform(put("/api/books/42")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(bookRequest))
+        ).andExpect(status().isNotFound());
     }
 
     private Book createBook(long id, String title, String author, String isbn) {

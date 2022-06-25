@@ -3,6 +3,7 @@ package com.arthurolg.webapi.books;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,5 +34,16 @@ public class BookService {
             throw new BookNotFoundException(String.format("Book with id '%s' not exists", id));
         }
         return requestedBook.get();
+    }
+
+    @Transactional
+    public Book updateBookById(Long id, BookRequest bookToUpdate) {
+        Optional<Book> requestedBook = bookRepository.findById(id);
+        if (requestedBook.isEmpty()) {
+            throw new BookNotFoundException(String.format("Book with id '%s' not exists", id));
+        }
+        Book book = requestedBook.get();
+        BeanUtils.copyProperties(bookToUpdate, book);
+        return book;
     }
 }

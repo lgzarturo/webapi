@@ -1,6 +1,5 @@
 package com.arthurolg.webapi.books;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +36,11 @@ public class BookController {
     @GetMapping("{id}")
     public ResponseEntity<Book> getBookById(@PathVariable Long id) {
         return ResponseEntity.ok(bookService.getBookById(id));
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Book> updateBook(@PathVariable Long id, @Valid @RequestBody BookRequest bookRequest) {
+        return ResponseEntity.ok(bookService.updateBookById(id, bookRequest));
     }
 
 
