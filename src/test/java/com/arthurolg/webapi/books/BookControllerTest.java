@@ -14,11 +14,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -141,6 +141,8 @@ public class BookControllerTest {
 
     @Test
     public void deletingUnknownEntityByIdShouldReturn404() throws Exception {
+        when(bookService.deleteById(eq(42L)))
+                .thenThrow(new BookNotFoundException("Book with id '42' not exists"));
         this.mockMvc.perform(delete("/api/books/42"))
                 .andExpect(status().isNotFound());
     }

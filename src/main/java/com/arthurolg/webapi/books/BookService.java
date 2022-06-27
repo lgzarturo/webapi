@@ -1,7 +1,6 @@
 package com.arthurolg.webapi.books;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,11 +46,12 @@ public class BookService {
         return book;
     }
 
-    public void deleteById(Long id) {
+    public Boolean deleteById(Long id) {
         Optional<Book> requestedBook = bookRepository.findById(id);
         if (requestedBook.isEmpty()) {
             throw new BookNotFoundException(String.format("Book with id '%s' not exists", id));
         }
         bookRepository.delete(requestedBook.get());
+        return true;
     }
 }
